@@ -7,6 +7,10 @@ import commentsRoutes from './routes/comments.js';
 import authRoutes from './routes/auth.js';
 
 
+//middlewares
+//this is important because we cannot send json data into our browser if we dont have this 
+app.use(express.json())
+
 //this all our endpoint in routes
 app.use('/api/users', usersRoutes)
 app.use('/api/posts', postsRoutes)
