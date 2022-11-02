@@ -34,6 +34,21 @@ export const register = (req, res) => {
             if(err) return res.status(500).json(err)
             return res.status(200).json('user has been created')
          })
+
+
+
+         //what this does is that if we try to delete a post then this token function will check the id of the user who wants to delete
+         //and compare it in our user database remember the "data[0]", together with it's 'id'. So with this the jwt token will add 
+         //more security in our app, secretKey will be explained later
+         const token = jwt.sign({ id: data[0].id }, 'secretKey');
+
+         const { password, ...others} = data[0]// display the others except the password
+
+         //cookie name is accessToken and it will get the token function while make a condition that our cookies can only be accessable 
+         //with http site only and then return the result of others, so this will display everything exept the password 
+         res.cookie('accessToken', token, {
+            httpOnly: true,
+         }).status(200).json(others)
     })
 
 }
