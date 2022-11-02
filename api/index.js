@@ -4,7 +4,7 @@ import usersRoutes from './routes/users.js';
 import postsRoutes from './routes/posts.js';
 import likesRoutes from './routes/likes.js';
 import commentsRoutes from './routes/comments.js';
-import authRoutes from './routes/auth.js';
+import authRoutes from './routes/auths.js';
 
 
 //middlewares

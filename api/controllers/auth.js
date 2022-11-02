@@ -1,4 +1,4 @@
-import { db } from "../connectMysql";
+import { db } from "../connectMysql.js";
 import bcrypt from 'bcryptjs';
 
 export const register = (req, res) => {
