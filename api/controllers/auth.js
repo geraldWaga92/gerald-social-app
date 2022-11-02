@@ -79,6 +79,13 @@ export const login = (req, res) => {
     }) 
 }
 
+//this is our logout function and to do that we only need to clear the cookie of our users so here we say ' res.clearCookie' and put our 
+//cookie name 'accessToken', remember accesstoken holds the data of our user, the secure: true means secure logging out and then the sameSite
+//means we have two port which is 3000 for client and 5000 for api which is not thesame. So in order for the cookie to prevent from blocking 
+//the logout function we need to specify that these two port is not thesame so we say "sameSite:"none".
 export const logout = (req, res) => {
-    
+    res.clearCookie("accessToken",{
+        secure:true,
+        sameSite:"none"
+      }).status(200).json("User has been logged out.")
 }
