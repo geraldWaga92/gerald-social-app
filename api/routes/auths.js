@@ -6,7 +6,7 @@ const router = express.Router()
 //endpoint in auth routes will be connected from our controllers auth.js
 router.post('/login', login)
 router.post('/register', register)
-router.get('/logout', logout)
+router.post('/logout', logout)
 
 
 
