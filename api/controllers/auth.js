@@ -1,9 +1,9 @@
 import { db } from "../connectMysql.js";
 import bcrypt from 'bcryptjs';
 
+//here we will create our user
 export const register = (req, res) => {
     //----check if user exist----
-
     const q = 'SELECT * FROM users WHERE username = ?'
 
     //the '[req.body.username]' is the value the username will hold when a user is registered for the login
