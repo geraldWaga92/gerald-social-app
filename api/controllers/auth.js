@@ -35,20 +35,6 @@ export const register = (req, res) => {
             return res.status(200).json('user has been created')
          })
 
-
-
-         //what this does is that if we try to delete a post then this token function will check the id of the user who wants to delete
-         //and compare it in our user database remember the "data[0]", together with it's 'id'. So with this the jwt token will add 
-         //more security in our app, secretKey will be explained later
-         const token = jwt.sign({ id: data[0].id }, 'secretKey');
-
-         const { password, ...others} = data[0]// display the others except the password
-
-         //cookie name is accessToken and it will get the token function while make a condition that our cookies can only be accessable 
-         //with http site only and then return the result of others, so this will display everything exept the password 
-         res.cookie('accessToken', token, {
-            httpOnly: true,
-         }).status(200).json(others)
     })
 
 }
@@ -64,17 +50,33 @@ export const login = (req, res) => {
 
     //remember that data here returns an array of user
     db.query(q, [req.body.username], (err, data) => {
-            if(err) return res.status(500).json(err)
-    //the "data.length === 0" means no user, so below checks if there is no user
-          if(data.length === 0)  return res.status(404).json('User not found')
-         })
+        if(err) return res.status(500).json(err)
+            //the "data.length === 0" means no user, so below checks if there is no user
+        if(data.length === 0)  return res.status(404).json('User not found')
     
-    // --- And if there NO error ---
-    //here our checkPassword compare the password we set in our database, so we put the "req.body.password" from our database
-    //and remeber that data returns an array so since we only have 1 users we put data[0] as first array followed by the users password
-    const checkPassword = bcrypt.compareSync(req.body.password, data[0].password)
-
-    if(!checkPassword) return res.status(400).json('Wrong password or username')
+    
+        // --- And if there NO error ---
+        //here our checkPassword compare the password we set in our database, so we put the "req.body.password" from our database
+        //and remeber that data returns an array so since we only have 1 users we put data[0] as first array followed by the users password
+        const checkPassword = bcrypt.compareSync(req.body.password, data[0].password);
+    
+        if(!checkPassword) 
+            return res.status(400).json('Wrong password or username');
+    
+        //what this does is that if we try to delete a post then this token function will check the id of the user who wants to delete
+        //and compare it in our user database remember the "data[0]", together with it's 'id'. So with this the jwt token will add 
+        //more security in our app, secretKey will be explained later
+        const token = jwt.sign({ id: data[0].id }, 'secretkey');
+    
+        const { password, ...others} = data[0];// display the others except the password
+    
+        //cookie name is accessToken and it will get the token function while make a condition that our cookies can only be accessable 
+        //with http site only and then return the result of others, so this will display everything exept the password 
+        res.cookie('accessToken', token, {
+        httpOnly: true,
+        }).status(200).json(others);
+    
+    }) 
 }
 
 export const logout = (req, res) => {
