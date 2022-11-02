@@ -1,5 +1,6 @@
 import { db } from "../connectMysql.js";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 //------here we will create our user-----
 export const register = (req, res) => {
