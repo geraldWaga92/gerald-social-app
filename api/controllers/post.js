@@ -19,16 +19,18 @@ export const getPosts = (req, res) => {
         //and the posts itself, let's say we want to target the users profile so first we combine the two component and then make a condition that
         //the 'u.id' means the user id, and we place the 'u.id' inside the name userId together with name and profile. So this is a confusing line
         //but this is all what is does, it's just assigning values
+        //the condition is updated and i won't be explaining it but you get the idea and it still thesame
         const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users
-        AS u ON (u.id = p.userId) JOIN relationships AS r ON (p.userId = r.followedUserId 
-        AND r.followerUserId = ?)`;
-    
+        AS u ON (u.id = p.userId) LEFT JOIN relationships AS r ON (p.userId = r.followedUserId)
+        WHERE r.followerUserId = ? OR p.userId = ?`;//the added ("WHERE r.followerUserId = ? OR p.userId = ?" and "LEFT JOIN" ) display not only the followed post but also your post
+        //before the added line it only display the followed post
     
         //then we use the db which connect from our database and use query method to search for a data, and then use our q variable as argument for 
         //giving conditions, next is we get the data from the arguments above and remember that data we are refferring to is the data object from auth.js
         //remember the object "id: data[0].id". So if we say data.id this is thesame as 'data[0].id', remeber that we are targeting the current user
         //that is logged in and not the other user
-        db.query(q, [data.id], (error, data) => {
+        //--we add another 'data.id' because we want to display not only the followed post but also our, so the other data.id is our post
+        db.query(q, [data.id, data.id], (error, data) => {
             if (error) return res.status(500).json(error);
             return res.status(200).json(data);
         })
@@ -36,4 +38,28 @@ export const getPosts = (req, res) => {
     })
 
 
+}
+
+
+export const addPost = (req, res) => {
+
+   
+    const token = req.cookies.accessToken;
+
+
+    if(!token) return res.status(401).json('Not logged in!')
+
+    
+    Jwt.verify(token, 'secretkey', (error, data) => {
+        if (error) return res.status(403).json('Token is not valid!');
+
+        const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users
+        AS u ON (u.id = p.userId) LEFT JOIN relationships AS r ON (p.userId = r.followedUserId)
+        WHERE r.followerUserId = ? OR p.userId = ?`;
+       
+        db.query(q, [data.id, data.id], (error, data) => {
+            if (error) return res.status(500).json(error);
+            return res.status(200).json(data);
+        })
+    })
 }
