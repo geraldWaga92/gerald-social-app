@@ -1,5 +1,6 @@
 import { db } from '../connectMysql.js';
 import Jwt from 'jsonwebtoken';
+import moment from 'moment';
 
 export const getPosts = (req, res) => {
 
@@ -42,24 +43,31 @@ export const getPosts = (req, res) => {
 
 
 export const addPost = (req, res) => {
-
-   
+    //thesame as above, we look for accessToken
     const token = req.cookies.accessToken;
-
-
     if(!token) return res.status(401).json('Not logged in!')
 
-    
+    //verify again if it is valid and  
     Jwt.verify(token, 'secretkey', (error, data) => {
         if (error) return res.status(403).json('Token is not valid!');
 
-        const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users
-        AS u ON (u.id = p.userId) LEFT JOIN relationships AS r ON (p.userId = r.followedUserId)
-        WHERE r.followerUserId = ? OR p.userId = ?`;
+
+        //here we are adding a post, to add post we must be logged in first
+        //we create a variable q, which holds the posts format
+        const q ="INSERT INTO posts(`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
+        //must be aligned with the format above
+        const values = [
+            req.body.desc,
+            req.body.img,
+            //this is our library 'moment' for our createdAt
+            moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+            //then our userId
+            data.id,
+        ];
        
-        db.query(q, [data.id, data.id], (error, data) => {
-            if (error) return res.status(500).json(error);
-            return res.status(200).json(data);
-        })
+        db.query(q, [values], (err, data) => {
+            if (err) return res.status(500).json(err);
+            return res.status(200).json("Post has been created.");
+        });
     })
 }
