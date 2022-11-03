@@ -60,7 +60,7 @@ export const addPost = (req, res) => {
             req.body.desc,
             req.body.img,
             //this is our library 'moment' for our createdAt
-            moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+            moment(Date.now()).format("YYYY-MM-DD[T]HH:mm:ss"),
             //then our userId
             data.id,
         ];
