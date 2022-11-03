@@ -49,13 +49,13 @@ const storage = multer.diskStorage({
   // --- our endpoint ---
   //we post our file to our storage destination and then use our upload functionlity and we only want a 'single' file, so we make a (req, res)
   //here
-  app.post('/api/upload', upload.single('file', (req, res) => {
+  app.post('/api/upload', upload.single('file'), (req, res) => {
 
     //the file we are fetching comes from our user
     const file = req.file;
     //if ok our file will be uploaded to our db
-    res.status(200).json(file.filename)
-  }))
+    res.status(200).json(file.filename);
+  });
 
 //---- end of middlewares ---
 
