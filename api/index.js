@@ -28,16 +28,34 @@ app.use(cors({
 //this is important to add here if we use cookies so that our browser cookies will be analized bu the our cookie parser
 app.use(cookieParser());
 
+//--our multer library --
 const storage = multer.diskStorage({
+    
+    //we noticed the third arguments here "cb", this act as a callback function which excutes the function, so let's say we
+    //want our destination in the client folder, so after defining where the location is, we attach the cb here to directly call it
     destination: function (req, file, cb) {
+        //this is where our uploaded file destination
       cb(null, "../client/public/upload");
     },
     filename: function (req, file, cb) {
+        //here we use "Date.now() + file.originalname" because everytime we upload a file we create a nickname calls original name
+        //so to prevent from duplication of the name we use date.now() to know that this is a different file
       cb(null, Date.now() + file.originalname);
     },
   });
-  
+  //we can then now use the variable upload which holds the storage functionality 
   const upload = multer({ storage: storage });
+  
+  // --- our endpoint ---
+  //we post our file to our storage destination and then use our upload functionlity and we only want a 'single' file, so we make a (req, res)
+  //here
+  app.post('/api/upload', upload.single('file', (req, res) => {
+
+    //the file we are fetching comes from our user
+    const file = req.file;
+    //if ok our file will be uploaded to our db
+    res.status(200).json(file.filename)
+  }))
 
 //---- end of middlewares ---
 
