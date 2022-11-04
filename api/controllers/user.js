@@ -10,4 +10,4 @@ export const getUser = (req, res) => {
     const { password, ...info } = data[0];
     return res.json(info);
   });
-};
+}; 
