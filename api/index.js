@@ -5,6 +5,7 @@ import postsRoutes from './routes/posts.js';
 import likesRoutes from './routes/likes.js';
 import commentsRoutes from './routes/comments.js';
 import authRoutes from './routes/auths.js';
+import relationshipRoutes from './routes/relationships.js';
 import cors from 'cors';
 import cookieParser from "cookie-parser";
 import multer from "multer";
@@ -66,6 +67,7 @@ app.use('/api/posts', postsRoutes)
 app.use('/api/likes', likesRoutes)
 app.use('/api/comments', commentsRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/relationships', relationshipRoutes)
 
 
 //just add 4000 to successfully connect with the client
