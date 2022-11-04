@@ -40,6 +40,8 @@ export const addLike = (req, res) => {
 
 export const deleteLike = (req, res) => {
 
+
+
   //again only the user  can delete
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
@@ -52,9 +54,9 @@ export const deleteLike = (req, res) => {
     const q = "DELETE FROM likes WHERE `userId` = ? AND `postId` = ?";
    
 
-    //we don't need the values here we just directly insert our userInfo id here meaning the user that like the post, and the postId that located in the body
-    //which is the post that we want to delete
-    db.query(q, [userInfo.id, req.params.postId], (err, data) => {
+    //we don't need the values here we just directly insert our userInfo id here meaning the user that like the post, 
+    //and after confirming the userInfo then we query the postId of the post that we want to delete and if it exist
+    db.query(q, [userInfo.id, req.query.postId], (err, data) => {
       if (err) return res.status(500).json(err);
       return res.status(200).json("Post has been disliked.");
     });
