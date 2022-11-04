@@ -2,6 +2,7 @@ import { db } from "../connectMysql.js";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 
+// --- Get Comment ----
 export const getComments = (req, res) => {
     //here it's thesame on our post but we just copy and change posts to comments, notice we don't include realationship here
     //because what we only fetch is the postId comments and date cratedAt
@@ -17,6 +18,7 @@ export const getComments = (req, res) => {
   });
 };
 
+// --- Add Comment ----
 //just like our addPost we copy it's structure 
 export const addComment = (req, res) => {
     //check if there is a token
