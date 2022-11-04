@@ -1,6 +1,7 @@
 import { db } from "../connectMysql.js";
 import jwt from "jsonwebtoken";
 
+//--getRelationship--
 export const getRelationships = (req,res)=>{
     //again we match the followerUserId if it matched to the current user followeduser id
     const q = "SELECT followerUserId FROM relationships WHERE followedUserId = ?";
@@ -12,6 +13,7 @@ export const getRelationships = (req,res)=>{
     });
 }
 
+//--addRelationship--
 export const addRelationship = (req, res) => {
     const token = req.cookies.accessToken;
     if (!token) return res.status(401).json("Not logged in!");
@@ -21,8 +23,8 @@ export const addRelationship = (req, res) => {
   
       const q = "INSERT INTO relationships (`followerUserId`,`followedUserId`) VALUES (?)";
       const values = [
-        userInfo.id,
-        req.body.userId
+        userInfo.id,//because we are the follower
+        req.body.userId//this is the followed userId
       ];
   
       db.query(q, [values], (err, data) => {
@@ -32,8 +34,11 @@ export const addRelationship = (req, res) => {
     });
   };
   
+
+  //--deleteRelationship--
   export const deleteRelationship = (req, res) => {
   
+    //we need token here because only the user can delete relationship
     const token = req.cookies.accessToken;
     if (!token) return res.status(401).json("Not logged in!");
   
@@ -42,6 +47,7 @@ export const addRelationship = (req, res) => {
   
       const q = "DELETE FROM relationships WHERE `followerUserId` = ? AND `followedUserId` = ?";
   
+      //here we pass the current user which is the userInfo.id and the userId which we followed
       db.query(q, [userInfo.id, req.query.userId], (err, data) => {
         if (err) return res.status(500).json(err);
         return res.status(200).json("Unfollow");
