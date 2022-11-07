@@ -15,7 +15,7 @@ export const getPosts = (req, res) => {
 
     //now if ther user is logged in and there is a token, we first verify if it is valid, so we compare the token, and 'secretkey'. if there
     //is an error we throw token is not valid if is valid we return the data on this line "db.query(q, [data.id], (error, data)"
-    Jwt.verify(token, 'secretkey', (error, data) => {
+    Jwt.verify(token, 'secretkey', (error, userInfo) => { //I forgot to add our "userInfo" here,  that is why i recieved an error and there is no diplay on my feed section
         if (error) return res.status(403).json('Token is not valid!');
 
         //this line means that in our posts or what we see on our client side post is we have two components which is the users profile with it's name
@@ -23,18 +23,16 @@ export const getPosts = (req, res) => {
         //the 'u.id' means the user id, and we place the 'u.id' inside the name userId together with name and profile. So this is a confusing line
         //but this is all what is does, it's just assigning values
         //the condition is updated and i won't be explaining it but you get the idea and it still thesame
-        const q =
         //this is line is included because we want our profile page to display only the profile posts
-            userId !== "undefined"
+        const q = userId !== "undefined"
             ? `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.createdAt DESC`
             : `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
                 LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
                 ORDER BY p.createdAt DESC`;//the added ("WHERE r.followerUserId = ? OR p.userId = ?" and "LEFT JOIN" ) display not only the followed post but also your post
         //before the added line it only display the followed post
 
-        const values =
         //here if there is NOT a userId then return undefined but if it has then returned the userId and it's userInfo
-         userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id];
+        const values = userId !== 'undefined' ? [userId] : [userInfo.id, userInfo.id];
     
         //then we use the db which connect from our database and use query method to search for a data, and then use our q variable as argument for 
         //giving conditions, next is we get the data from the arguments above and remember that data we are refferring to is the data object from auth.js
@@ -48,11 +46,10 @@ export const getPosts = (req, res) => {
         })
 
     })
-
-
 }
 
 
+// --- add post ---
 export const addPost = (req, res) => {
     //thesame as above, we look for accessToken
     const token = req.cookies.accessToken;
@@ -82,3 +79,23 @@ export const addPost = (req, res) => {
         });
     })
 }
+
+
+// --- delete post ---
+export const deletePost = (req, res) => {
+    const token = req.cookies.accessToken;
+    if (!token) return res.status(401).json("Not logged in!");
+  
+    Jwt.verify(token, "secretkey", (err, userInfo) => {
+      if (err) return res.status(403).json("Token is not valid!");
+  
+      const q =
+        "DELETE FROM posts WHERE `id`=? AND `userId` = ?";
+  
+      db.query(q, [req.params.id, userInfo.id], (err, data) => {
+        if (err) return res.status(500).json(err);
+        if(data.affectedRows>0) return res.status(200).json("Post has been deleted.");
+        return res.status(403).json("You can delete only your post")
+      });
+    });
+  };
